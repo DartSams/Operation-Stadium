@@ -1,0 +1,18 @@
+*{
+    margin: 0;
+}
+
+#container{
+    width:100vw;
+    height: 100vh;
+}
+
+#container #participant #column{
+    display: flex;
+    flex-direction: column;
+}
+
+#container #participant #row{
+    display: flex;
+    flex-direction: row;
+}

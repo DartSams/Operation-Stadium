@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
+    <script src="{{url_for('static', filename='index.js')}}" defer></script>
+</head>
+<body>
+    <div id="container">
+        {% for i in data["participants_names"] %}
+            <div id="column">
+                <div id="row">
+                    <div id="participant">
+                    <!-- <div id="mugshot">
+                        <img src="static\stock.jpg" alt="mug shot">
+                    </div> -->
+                    <div id="name">
+                        {{data["participants_data"][i]["name"]}}
+                        {{data["participants_data"][i]["status"]}}
+                    </div>
+                    <button id="change-status" value="{{data['participants_data'][i]['status']}}">Hit</button>
+                </div>
+                
+            </div>
+            </div>
+            
+        {% endfor %}
+    </div>
+
+</body>
+
+<script>
+    let statusChange = document.querySelector("#change-status")
+    statusChange.addEventListener("click",function(){
+        statusChange.value = "Out"
+    })
+
+</script>
+</html>
