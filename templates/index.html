@@ -10,7 +10,14 @@
 </head>
 <body>
     <div id="container">
-        {% for i in data["participants_names"] %}
+        <div id="add-participant-container">
+            <input type="text" class="new-participant" id="new-participant" placeholder="Name...">
+            <button id="create-participant">Submit</button>
+            <button id="refresh">Refresh</button>
+        </div>
+
+        <div id="participant-list">
+            {% for i in data["participants_names"] %}
             <div id="column">
                 <div id="row">
                     <div id="participant">
@@ -24,19 +31,41 @@
                     <button id="change-status" value="{{data['participants_data'][i]['status']}}">Hit</button>
                 </div>
                 
-            </div>
+                </div>
             </div>
             
         {% endfor %}
+        </div>
+        
+
+        {{data["participants"]}}
     </div>
 
 </body>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+
 <script>
+    var socket = io();
     let statusChange = document.querySelector("#change-status")
     statusChange.addEventListener("click",function(){
         statusChange.value = "Out"
     })
 
+    let createParticipant = document.querySelector("#create-participant")
+    let newParticipant = document.querySelector("#new-participant")
+    createParticipant.addEventListener("click",function(){
+        // (name,found,image_link)
+        socket.emit("new-participant",{name:newParticipant.value})
+    })
+
+    let refreshButton = document.querySelector("#refresh")
+    refreshButton.addEventListener("click",function(){
+        socket.emit("refresh",{message:"requesting participants..."})
+    })
+
+    socket.on("after-refresh",function(data){
+        console.log(data)
+    })
 </script>
-</html>
+</html> 
