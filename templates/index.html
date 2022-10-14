@@ -17,28 +17,26 @@
         </div>
 
         <div id="participant-list">
-            {% for i in data["participants_names"] %}
-            <div id="column">
-                <div id="row">
-                    <div id="participant">
-                    <!-- <div id="mugshot">
-                        <img src="static\stock.jpg" alt="mug shot">
-                    </div> -->
-                    <div id="name">
-                        {{data["participants_data"][i]["name"]}}
-                        {{data["participants_data"][i]["status"]}}
+            <div id="row">
+
+                <div id="participant">
+                    <div id="mugshot">
+                        <!-- <div id="mugshot">
+                            <img src="static\stock.jpg" alt="mug shot">
+                        </div> -->
                     </div>
-                    <button id="change-status" value="{{data['participants_data'][i]['status']}}">Hit</button>
+
+                    <div id="name">
+
+                    </div>
+
                 </div>
                 
-                </div>
             </div>
+                
             
-        {% endfor %}
         </div>
         
-
-        {{data["participants"]}}
     </div>
 
 </body>
@@ -47,10 +45,10 @@
 
 <script>
     var socket = io();
-    let statusChange = document.querySelector("#change-status")
-    statusChange.addEventListener("click",function(){
-        statusChange.value = "Out"
-    })
+    // let statusChange = document.querySelector("#change-status")
+    // statusChange.addEventListener("click",function(){
+    //     statusChange.value = "Out"
+    // })
 
     let createParticipant = document.querySelector("#create-participant")
     let newParticipant = document.querySelector("#new-participant")
@@ -66,6 +64,44 @@
 
     socket.on("after-refresh",function(data){
         console.log(data)
+        let participantList = document.querySelector("#participant-list")
+        participantList.textContent = ""
+        console.log(data["updated_list"])
+        for (let i = 0; i<data["updated_list"].length;i++){
+            console.log(data["updated_list"][i])
+            name = data["updated_list"][i]["name"]
+            status = data["updated_list"][i]["status"]
+            image = data["updated_list"][i]["image_link"]
+            let row = document.createElement("div")
+            row.id = row
+            let participant = document.createElement("div")
+            participant.id = "participant"
+            let mugshotDiv = document.createElement("div")
+            mugshotDiv.id = "mugshot"
+            let mugshotPic = document.createElement("img")
+            mugshotPic.src = image
+
+            let participantName = document.createElement("div")
+            participantName.id = "name"
+            participantName.innerText = name
+
+            let participantStatus = document.createElement("div")
+            participantStatus.id = "status"
+            participantStatus.innerText = `found: ${status}`
+
+            let changeStatusButton = document.createElement("button")
+            changeStatusButton.id = "change-status"
+            changeStatusButton.innerText = "Change"
+            
+            
+            participant.appendChild(participantName)
+            participant.appendChild(participantStatus)
+            mugshotDiv.appendChild(mugshotPic)
+            participant.appendChild(mugshotDiv)
+            participant.appendChild(changeStatusButton)
+            row.appendChild(participant)
+            participantList.appendChild(row)
+        }
     })
 </script>
 </html> 
