@@ -12,6 +12,7 @@
     <div id="container">
         <div id="add-participant-container">
             <input type="text" class="new-participant" id="new-participant" placeholder="Name...">
+            <button id="reset">Reset participants</button>
             <button id="create-participant">Submit</button>
             <button id="refresh">Refresh</button>
         </div>
@@ -45,10 +46,10 @@
 
 <script>
     var socket = io();
-    // let statusChange = document.querySelector("#change-status")
-    // statusChange.addEventListener("click",function(){
-    //     statusChange.value = "Out"
-    // })
+    let resetBUtton = document.querySelector("#reset")
+    resetBUtton.addEventListener("click",function(){
+        socket.emit("reset",{message:"reset participants"})
+    })
 
     let createParticipant = document.querySelector("#create-participant")
     let newParticipant = document.querySelector("#new-participant")
@@ -79,7 +80,12 @@
             let mugshotDiv = document.createElement("div")
             mugshotDiv.id = "mugshot"
             let mugshotPic = document.createElement("img")
-            mugshotPic.src = image
+            if (image){
+                mugshotPic.src = image
+            } else {
+                mugshotPic.src = "static\stock.jpg"
+            } 
+            
 
             let participantName = document.createElement("div")
             participantName.id = "name"
@@ -92,12 +98,18 @@
             let changeStatusButton = document.createElement("button")
             changeStatusButton.id = "change-status"
             changeStatusButton.innerText = "Change"
+
+            changeStatusButton.addEventListener("click",function(){
+                socket.emit("change status",{name:participantName.innerText,status:status})
+
+            })
             
             
-            participant.appendChild(participantName)
-            participant.appendChild(participantStatus)
+            
             mugshotDiv.appendChild(mugshotPic)
             participant.appendChild(mugshotDiv)
+            participant.appendChild(participantName)
+            participant.appendChild(participantStatus)
             participant.appendChild(changeStatusButton)
             row.appendChild(participant)
             participantList.appendChild(row)

@@ -50,10 +50,39 @@ table1 = mydb["Hiders"] #connects to table but if not found will create it
 #         # return i
 #     return user
 
+lst = ["maya","amaya","jaedon","nelson","ola","dart","stronk","sunny","vinny","zaleci"]
+print("resetting")
+for i in lst:
+
+    data = {
+        "name":i.upper(),
+        "status":"Not yet",
+        "image_link":f"static\pics\{i}.png"
+        
+    }
+    table1.insert_one(data) #inserts into db
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@socketio.on("reset")
+def reset(msg):
+    lst = ["maya","amaya","jaedon","nelson","ola","dart","stronk","sunny","vinny","zaleci"]
+    print("resetting")
+    for i in lst:
+        for x in table1.find({},{ "name": i.upper()}):
+            if x:
+                continue
+            else:
+                data = {
+                    "name":i.upper(),
+                    "status":"Not yet",
+                    "image_link":f"static\pics\{i}.png"
+                    
+                }
+                table1.insert_one(data) #inserts into db
+
 
 @socketio.on("new-participant")
 def handle_message(msg):
@@ -61,7 +90,7 @@ def handle_message(msg):
     data = {
         "name":msg["name"],
         "status":"Not yet",
-        "image_link":"Default link"
+        "image_link":"static\stock.jpg"
         
     }
     table1.insert_one(data) #inserts into db
@@ -78,7 +107,8 @@ def handle_message(msg):
     hider_lst = []
     for x in table1.find({},{"_id":0}):
         print(x)
-        hider_lst.append(x)
+        if x not in hider_lst:
+            hider_lst.append(x)
     print(hider_lst)
     # hider_lst = show_entries('Hiders')
     # print(hider_lst)
@@ -87,8 +117,44 @@ def handle_message(msg):
     }
     emit("after-refresh",data,broadcast=True)
 
+@socketio.on("change status")
+def change_status(msg):
+    # client = MongoClient(db_str)
+    # mydb = client["Personal_db"] #connects to db but if not found will create it 
 
+    # table1 = mydb["broker"] #connects to table but if not found will create it 
+    print(msg)
+    print(type(msg["status"]))
+    new_status = ""
 
+    myquery = { "name": msg["name"] }
+
+    table1.delete_one(myquery)
+    # if msg["status"] != "Found":
+    #     new_status = "Found"
+    #     print("changing status")
+
+    # else:
+    #     new_status = "Not Yet"
+    #     print("Resetting")
+
+    # if msg["status"] == "Not yet":
+    #     print("found")
+
+    # else:
+    #     print("Not Yet")
+
+    # old_data = {
+    #     "name":msg["name"],
+    # }
+
+    # new_data = {
+    #     "$set":{
+    #         "status":new_status,
+    #     }
+    # } # the keyword <$set> is needed to represent that its going to updata the column
+    # table1.update_one(old_data,new_data) #takes 2 parameters the 1st finds the entry in db collection then replaces it with the 2nd paramater
+    # client.close()
 if __name__ == "__main__":
     socketio.run(app,debug=True,port=8000)
 
